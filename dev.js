@@ -12,4 +12,5 @@ Load Using:
 - Roblox Executor:
     loadstring(game:HttpGetAsync'http://127.0.0.1:16969/build.lua','devbuild.rbx')(); ${/* as provided by yielding's code */ ''}
 - ComputerCraft:
-    (function(rq)loadstring(rq.readAll(),'devbuild.cc')();rq.close();end)(http.get('http://127.0.0.1:16969/build.lua'));`));
+    (function(rq)loadstring(rq.readAll(),'devbuild-wrapper')();rq.close();end)(http.get('https://raw.githubusercontent.com/MokiyCodes/blb/main/.cc-devloader.lua'));
+    --> requires changing config/computercraft.cfg to allow 127.0.0.0`));
