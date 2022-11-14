@@ -53,3 +53,6 @@ You have some minimal variables available in your environment:
 | __just_filename | Just the filename by itself                                | in `/src/a/b.lua`: `print(__just_filename)` => `b.lua` |
 | __hash          | Hex hash of the file data                                  | `print(__hash)`                                        |
 | modules         | internal list of modles, avoid using unless hotfixing shit | n / a                                                  |
+
+#### Package Managers
+Putting files in src/packages/ makes them require()able without the packages/ portion.

@@ -106,6 +106,7 @@ modules['${file}'].isCached = false;`;}).join('\n\n----\n\n');
       p.replace('.lua', ''),
       p.replace(/\//gu, '\\\\'),
       p.replace(/\//gu, '\\\\').replace('.lua', ''),
+      ...p.startsWith('packages/') ? getEquivalent(p.replace('packages/', '')) : [],
       ...p.endsWith('/index.lua') ? getEquivalent(p.replace('/index.lua', '')) : [],
       ...!p.startsWith('/') ? getEquivalent(`/${p}`) : [],
     ];
