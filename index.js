@@ -41,9 +41,9 @@ end
   }
   const buildDir = path.resolve(process.cwd(), 'bundler-config');
   const prefix = `${prefixStr}
-return (function() -- put everything in a seperate closure
+return (function(oldRequire) -- put everything in a seperate closure
 ${fs.readFileSync(path.resolve(buildDir, 'prefix.lua'), 'utf-8')}`, postfix = `${fs.readFileSync(path.resolve(buildDir, 'postfix.lua'), 'utf-8')}
-end)();`;
+end)(require or function()end);`;
 
   // https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search (too lazy to reimplement a recursive readdir)
   const walk = (dir, done) => {
@@ -74,7 +74,7 @@ end)();`;
   };
 
   // proper promisified variant of walk();
-  const walkPromise = (dir) => new Promise((resolve, reject) => walk(dir, (err, res) => (err ? reject(err) : resolve(res))));
+  const walkPromise = (dir) => new Promise((resolve, reject) => walk(dir, (err, res) => (err ? reject(err) : resolve(res.sort()))));
 
   // main code
   return (async () => {
