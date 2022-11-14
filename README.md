@@ -9,6 +9,8 @@
 
 ## Installation
 
+[An example of a barebones project using this](https://github.com/MokiyCodes/cco/tree/94f6fdb3f9ce91265dbefc1cd85de79ff4f0f503)
+
 ###### Prerequesites
 
 1. [pnpm](https://pnpm.io)
