@@ -24,7 +24,7 @@ local require = function(...) -- handle loading modules
     if not modules[filepath] then
       local fallbackMod;
       pcall(function()fallbackMod=oldRequire(filepath);end)
-      if typeof(fallbackmod)~='nil' then return fallbackMod;end;
+      if typeof(fallbackMod)~='nil' then return fallbackMod;end;
       error('[blb] no such module \\'' .. filepath .. '\\'');
     end
     local module = modules[filepath]
