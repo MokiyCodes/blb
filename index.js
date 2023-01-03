@@ -4,13 +4,14 @@
 const { createHash } = require('crypto');
 
 // Core Bundler, just a minimally stripped version of yielding's
-module.exports = (prefixStr = '', dir = 'CWD') => {
-  if (dir==='CWD') dir=process.cwd()
-  const { performance } = require('perf_hooks'), start = performance.now();
+module.exports = (prefixStr = '', srcdir = 'CWD-SRC', cfgdir = 'CWD-CFG') => {
   const fs = require('fs'), path = require('path');
-  if (!fs.existsSync('bundler-config/')) {
-    fs.mkdirSync('bundler-config/');
-    fs.writeFileSync('bundler-config/prefix.lua', `-- Yielding's Bundler Prefix Script
+  if (srcdir==='CWD-SRC') srcdir=path.join(process.cwd(),'src')
+  if (cfgdir==='CWD-CFG') cfgdir=path.join(process.cwd(),'bundler-config')
+  const { performance } = require('perf_hooks'), start = performance.now();
+  if (!fs.existsSync(cfgdir)) {
+    fs.mkdirSync(cfgdir);
+    fs.writeFileSync(cfgdir+'/prefix.lua', `-- Yielding's Bundler Prefix Script
 -- Forked & Stripped by Mokiy
 -- Copyright (c) 2022 YieldingExploiter.
 -- Copyright (c) 2022 MokiyCodes.
@@ -41,13 +42,12 @@ local require = function(...) -- handle loading modules
   return table.unpack(returned)
 end
 `);
-    fs.writeFileSync('bundler-config/postfix.lua', `return require 'index'`);
+    fs.writeFileSync(cfgdir+'/postfix.lua', `return require 'index'`);
     console.log('Created Config!');
   }
-  const buildDir = path.resolve(dir, 'bundler-config');
   const prefix = `${prefixStr}
 return (function(oldRequire,...) -- put everything in a seperate closure
-${fs.readFileSync(path.resolve(buildDir, 'prefix.lua'), 'utf-8')}`, postfix = `${fs.readFileSync(path.resolve(buildDir, 'postfix.lua'), 'utf-8')}
+${fs.readFileSync(path.resolve(cfgdir, 'prefix.lua'), 'utf-8')}`, postfix = `${fs.readFileSync(path.resolve(cfgdir, 'postfix.lua'), 'utf-8')}
 end)(require or function()end,...);`;
 
   // https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search (too lazy to reimplement a recursive readdir)
@@ -84,7 +84,7 @@ end)(require or function()end,...);`;
   // main code
   return (async () => {
     // Find all lua files
-    const baseDir = path.resolve(dir, 'src');
+    const baseDir = srcdir;
     const dirFiles = await walkPromise(baseDir);
     const luaFiles = dirFiles.filter(v => v.toLowerCase().endsWith('.lua'));
     const relativeFiles = luaFiles.map(v => path.relative(baseDir, v).replace(/\\/gu, '/'));
