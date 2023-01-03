@@ -4,7 +4,7 @@
 const { createHash } = require('crypto');
 
 // Core Bundler, just a minimally stripped version of yielding's
-module.exports = (prefixStr = '', srcdir = 'CWD-SRC', cfgdir = 'CWD-CFG', win32require = false, initScriptName = 'index') => {
+module.exports = (prefixStr = '', srcdir = 'CWD-SRC', cfgdir = 'CWD-CFG', win32require = false, initScriptName = 'index', handleVararg = true) => {
   const fs = require('fs'), path = require('path');
   if (srcdir==='CWD-SRC') srcdir=path.join(process.cwd(),'src')
   if (cfgdir==='CWD-CFG') cfgdir=path.join(process.cwd(),'bundler-config')
@@ -46,7 +46,8 @@ end
     console.log('Created Config!');
   }
   const prefix = `${prefixStr}
-return (function(oldRequire,...) -- put everything in a seperate closure
+return (function(oldRequire,...) -- put everything in a seperate closure${handleVararg?`
+local vararg = {...};`:''}
 ${fs.readFileSync(path.resolve(cfgdir, 'prefix.lua'), 'utf-8')}`, postfix = `${fs.readFileSync(path.resolve(cfgdir, 'postfix.lua'), 'utf-8')}
 end)(require or function()end,...);`;
 
@@ -102,7 +103,9 @@ local __just_filename = '${fileName}';
 local __filename = '${file}';
 local __dirname = '${dir}';
 local __hash = '${fhash}';
+${handleVararg?`return (function(...)
 ${fcont}
+end)(unpack(vararg))`:fcont}
 end;
 modules['${file}'].cache = null;
 modules['${file}'].isCached = false;`;}).join('\n\n----\n\n');
