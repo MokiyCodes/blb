@@ -4,7 +4,7 @@
 const { createHash } = require('crypto');
 
 // Core Bundler, just a minimally stripped version of yielding's
-module.exports = (prefixStr = '', srcdir = 'CWD-SRC', cfgdir = 'CWD-CFG') => {
+module.exports = (prefixStr = '', srcdir = 'CWD-SRC', cfgdir = 'CWD-CFG', win32require = false) => {
   const fs = require('fs'), path = require('path');
   if (srcdir==='CWD-SRC') srcdir=path.join(process.cwd(),'src')
   if (cfgdir==='CWD-CFG') cfgdir=path.join(process.cwd(),'bundler-config')
@@ -109,8 +109,7 @@ modules['${file}'].isCached = false;`;}).join('\n\n----\n\n');
     // Define a function to get all equivalent paths
     const getEquivalent = (p) => [
       p.replace('.lua', ''),
-      p.replace(/\//gu, '\\\\'),
-      p.replace(/\//gu, '\\\\').replace('.lua', ''),
+      ...win32require ? [p.replace(/\//gu, '\\\\'), p.replace(/\//gu, '\\\\').replace('.lua', '')] : [],
       ...p.startsWith('packages/') ? getEquivalent(p.replace('packages/', '')) : [],
       ...p.endsWith('/index.lua') ? getEquivalent(p.replace('/index.lua', '')) : [],
       ...!p.startsWith('/') ? getEquivalent(`/${p}`) : [],
