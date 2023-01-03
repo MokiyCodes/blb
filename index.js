@@ -4,7 +4,7 @@
 const { createHash } = require('crypto');
 
 // Core Bundler, just a minimally stripped version of yielding's
-module.exports = (prefixStr = '', srcdir = 'CWD-SRC', cfgdir = 'CWD-CFG', win32require = false) => {
+module.exports = (prefixStr = '', srcdir = 'CWD-SRC', cfgdir = 'CWD-CFG', win32require = false, initScriptName = 'index') => {
   const fs = require('fs'), path = require('path');
   if (srcdir==='CWD-SRC') srcdir=path.join(process.cwd(),'src')
   if (cfgdir==='CWD-CFG') cfgdir=path.join(process.cwd(),'bundler-config')
@@ -42,7 +42,7 @@ local require = function(...) -- handle loading modules
   return table.unpack(returned)
 end
 `);
-    fs.writeFileSync(cfgdir+'/postfix.lua', `return require 'index'`);
+    fs.writeFileSync(cfgdir+'/postfix.lua', `return require '${initScriptName}'`);
     console.log('Created Config!');
   }
   const prefix = `${prefixStr}
