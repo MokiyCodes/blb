@@ -51,7 +51,7 @@ end
 return (function(oldRequire,...) -- put everything in a seperate closure${handleVararg ? `
 local vararg = {...};` : ''}
 ${fs.readFileSync(path.resolve(cfgdir, 'prefix.lua'), 'utf-8')}`, postfix = `${fs.readFileSync(path.resolve(cfgdir, 'postfix.lua'), 'utf-8')}
-end)(require or function()end,...);`;
+end)(require or function()end${fs.existsSync(path.resolve(cfgdir, '.novararg')) ? '' : ',...'});`;
 
   // https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search (too lazy to reimplement a recursive readdir)
   const walk = (dir, done) => {
