@@ -6,12 +6,14 @@ const { createHash } = require('crypto');
 // Core Bundler, just a minimally stripped version of yielding's
 module.exports = (prefixStr = '', srcdir = 'CWD-SRC', cfgdir = 'CWD-CFG', win32require = false, initScriptName = 'index', handleVararg = true) => {
   const fs = require('fs'), path = require('path');
-  if (srcdir==='CWD-SRC') srcdir=path.join(process.cwd(),'src')
-  if (cfgdir==='CWD-CFG') cfgdir=path.join(process.cwd(),'bundler-config')
+  if (srcdir === 'CWD-SRC')
+    srcdir = path.join(process.cwd(), 'src');
+  if (cfgdir === 'CWD-CFG')
+    cfgdir = path.join(process.cwd(), 'bundler-config');
   const { performance } = require('perf_hooks'), start = performance.now();
   if (!fs.existsSync(cfgdir)) {
     fs.mkdirSync(cfgdir);
-    fs.writeFileSync(cfgdir+'/prefix.lua', `-- Yielding's Bundler Prefix Script
+    fs.writeFileSync(`${cfgdir}/prefix.lua`, `-- Yielding's Bundler Prefix Script
 -- Forked & Stripped by Mokiy
 -- Copyright (c) 2022 YieldingExploiter.
 -- Copyright (c) 2022 MokiyCodes.
@@ -42,12 +44,12 @@ local require = function(...) -- handle loading modules
   return table.unpack(returned)
 end
 `);
-    fs.writeFileSync(cfgdir+'/postfix.lua', `return require '${initScriptName}'`);
+    fs.writeFileSync(`${cfgdir}/postfix.lua`, `return require '${initScriptName}'`);
     console.log('Created Config!');
   }
   const prefix = `${prefixStr}
-return (function(oldRequire,...) -- put everything in a seperate closure${handleVararg?`
-local vararg = {...};`:''}
+return (function(oldRequire,...) -- put everything in a seperate closure${handleVararg ? `
+local vararg = {...};` : ''}
 ${fs.readFileSync(path.resolve(cfgdir, 'prefix.lua'), 'utf-8')}`, postfix = `${fs.readFileSync(path.resolve(cfgdir, 'postfix.lua'), 'utf-8')}
 end)(require or function()end,...);`;
 
@@ -103,16 +105,18 @@ local __just_filename = '${fileName}';
 local __filename = '${file}';
 local __dirname = '${dir}';
 local __hash = '${fhash}';
-${handleVararg?`return (function(...)
+${handleVararg ? `return (function(...)
 ${fcont}
-end)(unpack(vararg))`:fcont}
+end)(unpack(vararg))` : fcont}
 end;
 modules['${file}'].cache = null;
 modules['${file}'].isCached = false;`;}).join('\n\n----\n\n');
     // Define a function to get all equivalent paths
     const getEquivalent = (p) => [
       p.replace('.lua', ''),
-      ...win32require ? [p.replace(/\//gu, '\\\\'), p.replace(/\//gu, '\\\\').replace('.lua', '')] : [],
+      ...win32require ? [
+        p.replace(/\//gu, '\\\\'), p.replace(/\//gu, '\\\\').replace('.lua', '')
+      ] : [],
       ...p.startsWith('packages/') ? getEquivalent(p.replace('packages/', '')) : [],
       ...p.endsWith('/index.lua') ? getEquivalent(p.replace('/index.lua', '')) : [],
       ...!p.startsWith('/') ? getEquivalent(`/${p}`) : [],
