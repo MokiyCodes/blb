@@ -4,7 +4,8 @@
 const { createHash } = require('crypto');
 
 // Core Bundler, just a minimally stripped version of yielding's
-module.exports = (prefixStr = '') => {
+module.exports = (prefixStr = '', dir = 'CWD') => {
+  if (dir==='CWD') dir=process.cwd()
   const { performance } = require('perf_hooks'), start = performance.now();
   const fs = require('fs'), path = require('path');
   if (!fs.existsSync('bundler-config/')) {
@@ -43,7 +44,7 @@ end
     fs.writeFileSync('bundler-config/postfix.lua', `return require 'index'`);
     console.log('Created Config!');
   }
-  const buildDir = path.resolve(process.cwd(), 'bundler-config');
+  const buildDir = path.resolve(dir, 'bundler-config');
   const prefix = `${prefixStr}
 return (function(oldRequire,...) -- put everything in a seperate closure
 ${fs.readFileSync(path.resolve(buildDir, 'prefix.lua'), 'utf-8')}`, postfix = `${fs.readFileSync(path.resolve(buildDir, 'postfix.lua'), 'utf-8')}
@@ -83,7 +84,7 @@ end)(require or function()end,...);`;
   // main code
   return (async () => {
     // Find all lua files
-    const baseDir = path.resolve(process.cwd(), 'src');
+    const baseDir = path.resolve(dir, 'src');
     const dirFiles = await walkPromise(baseDir);
     const luaFiles = dirFiles.filter(v => v.toLowerCase().endsWith('.lua'));
     const relativeFiles = luaFiles.map(v => path.relative(baseDir, v).replace(/\\/gu, '/'));
